@@ -73,3 +73,11 @@ windows_x86_64_msvc
 zerocopy
 zerocopy-derive
 zeroize
+# Mac only: the secure chip and keychain, and DER signature parsing.
+bitflags
+core-foundation
+core-foundation-sys
+p256
+primeorder
+security-framework
+security-framework-sys
