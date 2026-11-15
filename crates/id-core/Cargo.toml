@@ -12,5 +12,8 @@ ring.workspace = true
 serde.workspace = true
 serde_bytes.workspace = true
 
+[dev-dependencies]
+id-keys.workspace = true
+
 [lints]
 workspace = true
