@@ -5,12 +5,15 @@
 //! above a store cannot leak what it never sees.
 //!
 //! This crate ships the in-memory store used by tests and by keys that only
-//! need to live as long as a process. The store backed by a Mac's secure
-//! chip and Keychain implements the same trait and lands separately, because
-//! it can only be tested on a Mac.
+//! need to live as long as a process, and, on a Mac, the store backed by the
+//! secure chip and the keychain.
 
+#[cfg(target_os = "macos")]
+mod macos;
 mod memory;
 
+#[cfg(target_os = "macos")]
+pub use macos::MacKeyStore;
 pub use memory::MemoryKeyStore;
 
 use id_core::{Error, KeyAlg, PublicKey, Signer};
