@@ -1,6 +1,6 @@
 //! The check function over real key logs: a person, an agent and a subagent.
 
-use id_check::{check, Context, Decision, Reason, Request, World};
+use id_check::{check, ChainCache, Context, Decision, Reason, Request, VersionedWorld, World};
 use id_core::log::{Commitment, Directory, Kind, Log, Op};
 use id_core::{KeyAlg, KeyResolver, PrincipalId, PublicKey, Signer, Timestamp};
 use id_grants::{Action, Grant, GrantError, GrantId, Revocations, SignedGrant};
@@ -35,6 +35,12 @@ impl ResourceLookup for Capsule {
 }
 
 impl World for Capsule {}
+
+impl VersionedWorld for Capsule {
+    fn version(&self) -> u64 {
+        self.directory.version()
+    }
+}
 
 fn read() -> Action {
     Action::new("read").expect("action")
@@ -118,6 +124,15 @@ fn a_person_issues_an_agent_and_grants_follow_the_logs() {
     let chain = [g1, g2.clone()];
     assert_eq!(ask(&capsule, &user, &[]), Decision::Allow(Reason::Owner));
     assert!(ask(&capsule, &sub, &chain).is_allowed());
+    let cache = ChainCache::new();
+    let warm = Request {
+        principal: &sub,
+        action: &read(),
+        resource: &capsule.doc.id,
+        proof: &chain,
+        context: Context::at(NOW),
+    };
+    assert!(cache.check(&warm, &capsule).is_allowed());
     assert_eq!(ask(&capsule, &sub, &[]), Decision::Deny(Reason::NoProof));
 
     // The laptop is lost. The kit removes its key and admits a new device.
@@ -140,7 +155,15 @@ fn a_person_issues_an_agent_and_grants_follow_the_logs() {
     // Everything the lost laptop signed stops working at once, and the same
     // identity issues it again from the new device.
     let lost = Reason::Proof(GrantError::UnknownKey { link: 0 });
-    assert_eq!(ask(&capsule, &sub, &chain), Decision::Deny(lost));
+    assert_eq!(ask(&capsule, &sub, &chain), Decision::Deny(lost.clone()));
+    let warm = Request {
+        principal: &sub,
+        action: &read(),
+        resource: &capsule.doc.id,
+        proof: &chain,
+        context: Context::at(NOW),
+    };
+    assert_eq!(cache.check(&warm, &capsule), Decision::Deny(lost));
     assert_eq!(person.id(), &user);
     let g1 = grant(&d2);
     let g2 = Grant::passing_on(&g1, sub.clone())
