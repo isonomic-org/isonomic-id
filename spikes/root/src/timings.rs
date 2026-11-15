@@ -2,7 +2,7 @@
 
 use crate::eth::{self, EthKey};
 use crate::keylog::{self, append, replay, Op};
-use id_check::{check, Context, Request};
+use id_check::{check, ChainCache, Context, Request};
 use id_core::{frame, KeyAlg, PrincipalId, Signed, Signer};
 use id_grants::{Action, Grant};
 use id_keys::{KeyStore, MemoryKeyStore, StoredKey};
@@ -151,6 +151,14 @@ pub fn print() {
         2000,
         || {
             assert!(check(&request, &world).is_allowed());
+        },
+    );
+    let cache = ChainCache::new();
+    time(
+        "check the same chain again, from the cache (target: under 100 µs)",
+        20000,
+        || {
+            assert!(cache.check(&request, &world).is_allowed());
         },
     );
     println!("   {size:>9} bytes, the three grants together");

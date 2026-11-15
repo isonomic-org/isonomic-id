@@ -19,6 +19,14 @@
 //!
 //! Shared workspaces add one thing: [`World::is_member`], so a grant issued
 //! to a team is usable by its members. Callers do not change.
+//!
+//! Verifying a chain's signatures is the expensive part. A caller that checks
+//! the same chain many times, such as the broker for one app session, uses a
+//! [`ChainCache`] so that only the first check pays for them.
+
+mod cache;
+
+pub use cache::{ChainCache, VersionedWorld};
 
 use id_core::{KeyResolver, PrincipalId, Timestamp};
 use id_grants::{verify_chain, Action, Authority, GrantError, GrantId, Revocations, SignedGrant};
@@ -138,13 +146,22 @@ pub trait World: KeyResolver + Revocations + ResourceLookup {
     }
 }
 
+/// Verifies a presented chain at a given time.
+type Verify<'a> = dyn Fn(&[SignedGrant], Timestamp) -> Result<Authority, GrantError> + 'a;
+
 /// Decides one request. Deny is the default.
 pub fn check(request: &Request<'_>, world: &dyn World) -> Decision {
+    check_with(request, world, &|proof, now| {
+        verify_chain(proof, world, world, now)
+    })
+}
+
+fn check_with(request: &Request<'_>, world: &dyn World, verify: &Verify<'_>) -> Decision {
     let Some(meta) = world.resource(request.resource) else {
         return Decision::Deny(Reason::UnknownResource);
     };
     let mut proof = Proof::Unchecked;
-    let mut decision = decide(request, world, &meta, request.action, &mut proof);
+    let mut decision = decide(request, world, &meta, request.action, &mut proof, verify);
     if matches!(decision, Decision::Deny(_)) {
         return decision;
     }
@@ -158,7 +175,7 @@ pub fn check(request: &Request<'_>, world: &dyn World) -> Decision {
         return Decision::Deny(Reason::ActionNotGranted);
     };
     for source in derived_from {
-        match decide(request, world, &source, &read, &mut proof) {
+        match decide(request, world, &source, &read, &mut proof, verify) {
             Decision::Allow(_) => {}
             Decision::Ask(why) => decision = Decision::Ask(why),
             Decision::Deny(why) => {
@@ -184,6 +201,7 @@ fn decide(
     meta: &ResourceMeta,
     action: &Action,
     proof: &mut Proof,
+    verify: &Verify<'_>,
 ) -> Decision {
     if *request.principal == meta.owner {
         return Decision::Allow(Reason::Owner);
@@ -192,12 +210,7 @@ fn decide(
         return Decision::Deny(Reason::NoProof);
     }
     if matches!(proof, Proof::Unchecked) {
-        *proof = Proof::Checked(verify_chain(
-            request.proof,
-            world,
-            world,
-            request.context.now,
-        ));
+        *proof = Proof::Checked(verify(request.proof, request.context.now));
     }
     let authority = match proof {
         Proof::Checked(Ok(authority)) => authority,

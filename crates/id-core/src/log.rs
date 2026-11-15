@@ -435,6 +435,7 @@ impl Log {
 #[derive(Clone, Debug, Default)]
 pub struct Directory {
     known: BTreeMap<PrincipalId, (Vec<Digest>, State)>,
+    version: u64,
 }
 
 impl Directory {
@@ -465,8 +466,15 @@ impl Directory {
         };
         if newer {
             self.known.insert(id.clone(), (shown, state));
+            self.version += 1;
         }
         Ok(&self.known[&id].1)
+    }
+
+    /// Goes up by one every time an accepted log changes what the directory
+    /// knows. Caches of verified grants compare it to notice key changes.
+    pub fn version(&self) -> u64 {
+        self.version
     }
 
     /// The last accepted state of an identity.

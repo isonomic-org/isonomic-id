@@ -81,6 +81,8 @@ pub struct Authority {
     pub actions: BTreeSet<Action>,
     /// One selector per link. A resource is covered only if all match.
     pub selectors: Vec<Selector>,
+    /// The latest start date in the chain.
+    pub not_before: Option<Timestamp>,
     /// The earliest expiry in the chain.
     pub expires: Option<Timestamp>,
     /// Every budget in the chain, each with the grant that carries it. All
@@ -148,6 +150,7 @@ pub fn verify_chain(
         holder: last.grant().recipient.clone(),
         actions: last.grant().actions.clone(),
         selectors: grants().map(|g| g.resource.clone()).collect(),
+        not_before: grants().filter_map(|g| g.not_before).max(),
         expires: grants().filter_map(|g| g.expires).min(),
         budgets,
         ask_first: grants().any(|g| g.ask_first),
