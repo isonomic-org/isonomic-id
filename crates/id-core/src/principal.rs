@@ -1,16 +1,16 @@
 //! Principal IDs.
 
-use crate::Error;
+use crate::{Digest, Error};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// The ID of anything that can hold authority: a person, a device, an agent,
 /// an app, and later an organization or a team.
 ///
-/// The text form is opaque to this crate for now. Its exact syntax is frozen
-/// together with the decision on what an identity is rooted in; until then
-/// only length and character set are checked, so grants and checks can be
-/// built and tested against it.
+/// A real ID is `did:iso:` followed by the digest of the first entry of the
+/// principal's key log, in hexadecimal, so it never changes when keys do.
+/// Other text that passes the length and character checks is accepted too,
+/// which keeps test names short.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct PrincipalId(String);
@@ -32,6 +32,12 @@ impl PrincipalId {
         } else {
             Err(Error::Malformed("principal id"))
         }
+    }
+
+    /// The ID of the principal whose key log starts with the entry that has
+    /// this digest.
+    pub fn from_genesis(first_entry: &Digest) -> Self {
+        PrincipalId(format!("did:iso:{}", first_entry.to_hex()))
     }
 
     /// The text form.

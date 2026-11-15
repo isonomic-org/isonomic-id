@@ -1,14 +1,13 @@
 //! Core types shared by every identity crate.
 //!
-//! This crate holds what does not depend on how an identity is rooted:
-//! principal IDs (opaque here), public keys and signature checks, digests,
-//! the byte encoding, and the signed envelope every grant and log entry
-//! travels in. The key log itself lands in this crate once the root of an
-//! identity is decided.
+//! Principal IDs, public keys and signature checks, digests, the byte
+//! encoding, the signed envelope every grant and log entry travels in, and
+//! the key log that an identity is rooted in.
 
 mod codec;
 mod envelope;
 mod key;
+pub mod log;
 mod principal;
 
 pub use codec::{from_cbor, to_cbor, MAX_ENCODED_BYTES};
@@ -108,7 +107,8 @@ pub fn hex(bytes: &[u8]) -> String {
 /// Answers whether a key speaks for a principal right now.
 ///
 /// This is the seam to the key log: grants and checks ask this question and
-/// never look at how an identity keeps its keys.
+/// never look at how an identity keeps its keys. [`log::Directory`] answers
+/// it from the logs it has verified.
 pub trait KeyResolver {
     /// True when `key` is a valid signing key of `principal` at time `at`.
     fn is_current_key(&self, principal: &PrincipalId, key: &PublicKey, at: Timestamp) -> bool;
