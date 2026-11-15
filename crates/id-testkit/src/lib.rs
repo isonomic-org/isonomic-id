@@ -4,7 +4,7 @@
 //! gives the same key and the same signatures on every run. That is what
 //! makes frozen test vectors possible. Nothing here is fit for real keys.
 
-use id_check::World;
+use id_check::{VersionedWorld, World};
 use id_core::{Digest, KeyResolver, PrincipalId, PublicKey, Signer, Timestamp};
 use id_grants::{GrantId, Revocations};
 use id_keys::{KeyStore, MemoryKeyStore, StoredKey};
@@ -52,6 +52,7 @@ pub struct TestWorld {
     spent: BTreeMap<(GrantId, String), u64>,
     members: BTreeSet<(PrincipalId, PrincipalId)>,
     next_resource: u64,
+    version: u64,
 }
 
 impl Default for TestWorld {
@@ -71,6 +72,7 @@ impl TestWorld {
             spent: BTreeMap::new(),
             members: BTreeSet::new(),
             next_resource: 1,
+            version: 0,
         }
     }
 
@@ -89,6 +91,7 @@ impl TestWorld {
             .entry(id.clone())
             .or_default()
             .push(key.public_key());
+        self.version += 1;
         TestPrincipal { id, key }
     }
 
@@ -96,11 +99,13 @@ impl TestWorld {
     /// was made outside this kit.
     pub fn register(&mut self, who: &PrincipalId, key: PublicKey) {
         self.keys.entry(who.clone()).or_default().push(key);
+        self.version += 1;
     }
 
     /// Makes `who`'s keys no longer current, as after a lost device.
     pub fn drop_keys(&mut self, who: &PrincipalId) {
         self.keys.remove(who);
+        self.version += 1;
     }
 
     /// Adds a resource owned by `owner` and returns its record. IDs count
@@ -131,6 +136,7 @@ impl TestWorld {
     /// Revokes a grant.
     pub fn revoke(&mut self, grant: GrantId) {
         self.revoked.insert(grant);
+        self.version += 1;
     }
 
     /// Records spending under a grant.
@@ -172,5 +178,11 @@ impl World for TestWorld {
 
     fn is_member(&self, who: &PrincipalId, group: &PrincipalId) -> bool {
         self.members.contains(&(who.clone(), group.clone()))
+    }
+}
+
+impl VersionedWorld for TestWorld {
+    fn version(&self) -> u64 {
+        self.version
     }
 }
