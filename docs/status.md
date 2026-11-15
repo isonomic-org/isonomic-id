@@ -85,7 +85,7 @@ Newest first.
 | Private keys stay in the key store; macOS store tested on the Intel Mac | Done. On the Intel Mac, P-256 and Ed25519 keys were made in the login keychain, signed, verified and destroyed. A test build may not use the secure chip, so P-256 fell back to the keychain, as designed. Rerun with `cargo test -p id-keys --test macos -- --ignored --nocapture`. |
 | Timings on the Intel Mac; three-link grant chain under 1 ms | Done. 256 µs for a first check and 7.2 µs from the cache on the Intel Mac. |
 | Decoders fuzzed for ten minutes | Done: four targets, ten minutes each, no failure. See below. |
-| Requests filed with the engine, harness, SDK and Cells | Done: isonomic-capsule R7, and entries in the harness, SDK and Cells request lists, all pinned to `c67932d`. |
+| Requests filed with the engine, harness, SDK and Cells | Done: isonomic-capsule R7, and entries in the harness, SDK and Cells request lists, all pinned to `d39a507`. |
 
 ## Timings
 
