@@ -1,23 +1,24 @@
 # Specification
 
-What the crates promise. Nothing here is frozen yet: the formats freeze after
-the decision on the root of an identity, and from then on a change needs the
-label `needs-master`.
+What the crates promise. Nothing here is frozen yet: the formats freeze once
+the decoders have been fuzzed, and from then on a change needs the label
+`needs-master`.
 
 ## Principals
 
-A principal is anything that can hold authority: a person, a device, an agent
-or an app; later an organization or a team. All share one ID type,
-`PrincipalId`.
+A principal is anything that can hold authority. Version 1 has three kinds
+with a key log of their own: a person, an agent and an app. Organizations and
+teams come later, in the same format.
 
-The ID's text form is opaque for now: 1 to 128 bytes of lowercase letters,
-digits, `:`, `.`, `_` and `-`. Its exact syntax is fixed together with the
-root decision.
+A device is not a principal. It is a signing key in its owner's log, and a
+signature shows which device made it.
+
+A principal's ID is `did:iso:` followed by the digest of the first entry of
+its key log, in hexadecimal: 72 characters. It never changes when keys do.
 
 Whether a key speaks for a principal is answered by one trait,
 `KeyResolver::is_current_key(principal, key, at)`. Grants and checks ask that
-question and never look at how an identity keeps its keys. The key log
-implements it.
+question and nothing else about identities. `log::Directory` answers it.
 
 ## Keys and signatures
 
@@ -32,8 +33,8 @@ Everything signed or hashed is framed first:
 "isonomic-id/v1/" + domain + 0x00 + message
 ```
 
-The domain names the purpose (`grant`, `key`, ...), so a signature or digest
-made for one purpose is never valid for another.
+The domain names the purpose (`log`, `grant`, `key`), so a signature or
+digest made for one purpose is never valid for another.
 
 ## Encoding
 
@@ -53,8 +54,71 @@ for byte.
 
 An object's ID is the digest of its payload under its domain.
 
-The envelope proves that the holder of `k` signed `p`. It does not prove that
-`k` speaks for anyone; that is the resolver's job.
+## The key log
+
+An identity is an append-only list of signed entries, in the envelope above
+under the domain `log`. Its owner keeps it; anyone handed it can verify all of
+it offline.
+
+| Field | Meaning |
+| --- | --- |
+| `v` | Version, 1 |
+| `seq` | Position, from 0 |
+| `prev` | The ID of the entry before. Absent in the first entry. |
+| `gen` | First entry only: `kind` (person, agent, app), `ctl` the owner of an agent or app, `n` 16 random bytes |
+| `ops` | Changes, below |
+| `next` | The rotation keys that may sign the next entry: `k` fingerprint, `r` role |
+| `at` | When the author says it was written. Never goes backwards. |
+
+| Change | Meaning |
+| --- | --- |
+| `add` | Adds a signing key `k`, with an optional encryption key `e` |
+| `remove` | Removes a signing key |
+| `bind` | Binds an outside account: scheme `s`, account `a`, the account's signature over the ID `p` |
+| `unbind` | Drops the binding of a scheme |
+| `ctl` | Moves an agent or app to a new owner |
+
+Two kinds of key never mix:
+
+- **Signing keys** sign grants and data. They have no power over the log.
+- **Rotation keys** change the log. Each is committed in advance by
+  fingerprint, with a role: `device` or `recovery`. Each is used once and
+  then destroyed.
+
+Rules a log must pass:
+
+1. The first entry is signed by a signing key it adds.
+2. Every later entry names the entry before it and is signed by a rotation
+   key that entry committed to.
+3. An entry may not commit again to the key that signed it.
+4. Only a recovery key may change which recovery keys are committed. A
+   stolen device cannot lock the recovery kit out.
+5. A binding is accepted only when a checker for its scheme verifies the
+   account's signature. It cannot be in the first entry.
+6. At most 4096 entries.
+
+`Directory` remembers the logs it has accepted. A longer continuation
+replaces what it knew; an older copy changes nothing; a log that parts ways
+with the known one is refused as a fork, with the position and whether the
+competing entry was signed by a recovery key. A person decides what to do
+with a fork. Nothing switches branches on its own.
+
+What this does not stop: someone holding an unused rotation key from a lost,
+unlocked device can show a forged branch to a verifier that has never seen
+the real log. Publishing the latest entry's digest (`State::head`) to a chain
+closes that. This library defines the digest; it publishes nothing.
+
+## Ethereum
+
+`id-eth` is arithmetic only.
+
+- A key is derived from a seed with HKDF, so the recovery kit brings it back.
+- The binding scheme is `eth`. The account is the key's 20-byte address. The
+  proof is the key's personal-message signature over
+  `Isonomic ID binding v1` and, on the next line, the ID.
+- `create2` computes the address a smart account would have, and
+  `account_salt` its salt from the ID. No account address is bound yet: it
+  depends on the account factory, which is chosen with the chain.
 
 ## Key stores
 
@@ -105,8 +169,8 @@ domain `grant`.
 A chain is verified owner's grant first:
 
 1. Every signature verifies, and each signing key currently speaks for its
-   link's issuer. When a key is replaced, grants signed with the old key
-   stop working and are issued again.
+   link's issuer. When a key is removed from a log, grants it signed stop
+   working and are issued again.
 2. Each link names the link before it as its parent, and is issued by that
    link's recipient.
 3. Each link only narrows: no new action, no later expiry, no larger or
