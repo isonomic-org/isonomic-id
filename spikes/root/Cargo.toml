@@ -1,0 +1,23 @@
+[package]
+name = "root-spike"
+description = "Two ways to root an identity, run through the same tests. Evidence for a decision; not shipped."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+id-check.workspace = true
+id-core.workspace = true
+id-grants.workspace = true
+id-keys.workspace = true
+id-resource.workspace = true
+id-testkit.workspace = true
+k256.workspace = true
+ring.workspace = true
+serde.workspace = true
+serde_bytes.workspace = true
+sha3.workspace = true
+
+[lints]
+workspace = true
