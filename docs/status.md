@@ -2,6 +2,66 @@
 
 Updated 15 Nov 2026.
 
+## Handoff
+
+This repository changes owner on 15 Nov 2026. The gate is closed and version 1
+is frozen. This section is what the next owner needs; the rest of the file is
+the detailed state.
+
+**Done.** Key-log identities, grants, the check function with a cache of
+verified chains, the Ethereum binding, the Mac key store (tested on the Intel
+Mac), fuzzing, frozen reference bytes, and `--locked` CI. Pull requests #1 to
+#25; issues 7, 8, 9 and 17 are closed.
+
+**Open.**
+
+- **isonomic-sdk #23** (open, not ours to merge): starts that repo's
+  `docs/requests.md` and asks for `permission_denied` and `approval_required`
+  wire errors. Its CI fails on the SDK's own fixture check (the `xtask` step
+  reports a transcript difference in `presets`, `artifacts`, `sessions` and
+  `approvals` lines), which a Markdown file cannot cause. A comment there asks
+  the SDK owner to merge it once their CI is green. Follow up if it stalls.
+- **Adoption requests**, all open and pinned to `d39a507`: isonomic-capsule R7
+  (the engine adopts IDs, grants and `ChainCache`), isonomic-harness (agents
+  as principals), isonomic-cells (a Cell runs under a grant chain; replaces
+  Cells decision 6). Answer their questions; do not change the frozen formats
+  to suit them without `needs-master`.
+- **Issue 14:** the recovery kit (seed, recovery rotation keys, the Ethereum
+  key restored from the seed).
+- **Issue 15:** signed checkpoints for data.
+- **Not decided:** the account factory, so no smart-account address is bound.
+- **Owed in internal plans, not this repo:** Desktop architecture §8 (the ID
+  is the workspace root; the engine signs with the device key) and whitepaper
+  9.1 (the ID comes from the first log entry; the root secret is the kit
+  seed).
+
+**Must know.**
+
+- **History was rewritten on 15 Nov 2026.** Every commit ID changed. Reclone,
+  or run `git fetch && git reset --hard origin/main` in an old clone. Anything
+  pinned by an older commit ID is stale; `d39a507` is the merge of #22 in the
+  new history. Closed pull request pages still show the old commits.
+- **Frozen formats.** The ID rule, key log, grant format and check function
+  change only with the `needs-master` label. Never edit
+  `vectors/v1/vectors.txt` by hand; a new format version gets `vectors/v2/`.
+- **Commits and pull requests** are authored as Omar Qadmiri
+  (omar@isonomic.com). No tool attribution or working notes in messages,
+  pull requests, issues, code or docs; name no third party; CI fails if the
+  older product name appears anywhere, history included.
+- **CI.** `main` is protected by org rulesets: pull requests only, merged
+  once green. Pull requests run on Linux; macOS runs after merge. Builds use
+  `--locked`, so a manifest change needs its lockfile change, and every new
+  package needs a reviewed line in `docs/deps-allow.txt`. Source and doc
+  files stay under 20 KB.
+- **Mac key store.** Its keychain test is ignored by default; run it by hand
+  on a Mac with `cargo test -p id-keys --test macos -- --ignored
+  --nocapture`. The secure chip is used only by a signed app with a keychain
+  access group entitlement; otherwise keys go to the login keychain.
+- **Fuzzing.** See `fuzz/README.md`. On a stable toolchain use
+  `RUSTC_BOOTSTRAP=1` and `-s none`.
+- **Timings.** `cargo run --release -p root-spike` prints them; the Intel Mac
+  figures below are the reference.
+
 ## The root is decided
 
 Omar decided on 15 Nov 2026: an identity is rooted in a key log, with an
