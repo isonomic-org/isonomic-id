@@ -68,42 +68,47 @@ Newest first.
 | Check denies by default; allow, deny or ask with a reason; vectors frozen | Done, except freezing. |
 | Ethereum key and address derived; two-way binding verifies offline; no chain call; allow-list | Done. |
 | Private keys stay in the key store; macOS store tested on the Intel Mac | Trait and in-memory store done. macOS store: issue 8. |
-| Timings on the Intel Mac | Linux numbers below. Intel Mac: run the command below. |
+| Timings on the Intel Mac; three-link grant chain under 1 ms | Measured. **The chain check misses: 1499 µs.** Issue 17 caches verified chains. |
 | Decoders fuzzed for ten minutes | Issue 9. The formats freeze after it. |
 | Requests filed with the engine, harness, SDK and Cells | After the freeze. |
 
 ## Timings
 
-Linux, x86-64 at 2.1 GHz, software keys, release build, measured with the
-prototype log, which does the same work as the library's:
+Release build, software keys, measured with `cargo run --release -p
+root-spike`. The prototype log does the same work as the library's.
 
-| Step | Time |
-| --- | --- |
-| Create an identity (3 P-256 keys, first log entry) | 261 µs |
-| Sign, P-256 | 29 µs |
-| Sign, Ed25519 | 33 µs |
-| Verify, P-256 | 70 µs |
-| Verify, Ed25519 | 47 µs |
-| Verify a 10-entry key log from scratch | 735 µs |
-| Sign the Ethereum binding | 73 µs |
-| Verify the Ethereum binding | 199 µs |
-| Check a three-link grant chain (target under 1000 µs) | 173 µs |
+| Step | Linux, x86-64 2.1 GHz | Intel test Mac |
+| --- | --- | --- |
+| Create an identity (3 P-256 keys, first log entry) | 261 µs | 1786 µs |
+| Sign, P-256 | 29 µs | 181 µs |
+| Sign, Ed25519 | 33 µs | 96 µs |
+| Verify, P-256 | 70 µs | 289 µs |
+| Verify, Ed25519 | 47 µs | 362 µs |
+| Verify a 10-entry key log from scratch | 735 µs | 3697 µs |
+| Sign the Ethereum binding | 73 µs | 444 µs |
+| Verify the Ethereum binding | 199 µs | 1601 µs |
+| Check a three-link grant chain (target under 1000 µs) | 173 µs | **1499 µs** |
 
 The three grants together are 720 bytes.
 
-On the Intel Mac, from a checkout of this repository:
+The Intel Mac was busy during its run: an Ed25519 verify came out slower than
+a P-256 verify, the reverse of an idle machine. Even so, verifying the chain's
+three signatures costs about 1 ms there, so the target needs verified chains
+to be cached (issue 17), which the design already expects: the broker
+verifies a chain once per session.
+
+To measure again on the Intel Mac, from a checkout:
 
 ```sh
 cargo run --release -p root-spike
 ```
-
-Record the block under "Timings" in this file.
 
 ## Open
 
 - The formats are not frozen. Fuzzing comes first (issue 9).
 - CI does not pass `--locked` yet (issue 7).
 - The recovery kit is issue 14; signed checkpoints for data are issue 15.
+- The chain check misses 1 ms on the Intel Mac (issue 17).
 - Check vectors are table-driven tests, not yet frozen files.
 - The approval a person gives for an "ask first" grant is a flag on the
   request. It becomes a one-use grant when the agent host adopts this crate.
