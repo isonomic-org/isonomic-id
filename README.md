@@ -2,7 +2,8 @@
 
 Identity and authority for Isonomic.
 
-- Every person, device, agent and app has a cryptographic identity.
+- Every person, agent and app has a cryptographic identity: a signed key log
+  its owner keeps, with an Ethereum key bound in.
 - Every permission is a signed grant.
 - One function decides access: allow, deny or ask, with a reason.
 
@@ -13,13 +14,14 @@ test keeps it that way (`docs/deps-allow.txt`).
 
 | Crate | Holds |
 | --- | --- |
-| `id-core` | Principal IDs, public keys, digests, the byte encoding, the signed envelope. The key log lands here once the root of an identity is decided. |
+| `id-core` | Principal IDs, the key log, public keys, digests, the byte encoding, the signed envelope. |
 | `id-keys` | The key-store trait and the in-memory store. Private keys never leave a store. |
 | `id-resource` | Resource IDs, owner, collection, provenance, selectors. |
 | `id-grants` | The grant format, narrowing, revocation, chain verification. |
 | `id-check` | The check function. |
+| `id-eth` | The Ethereum key, its address and the two-way binding. No chain calls. |
 | `id-testkit` | Fake principals, a fake world and a manual clock. |
-| `spikes/root` | Two ways to root an identity, run through the same tests. Evidence for a decision; not shipped. |
+| `spikes/root` | The two ways of rooting an identity that were tested before the key log was chosen. Evidence; not shipped. |
 
 ## Working here
 

@@ -12,6 +12,7 @@ id-grants.workspace = true
 id-resource.workspace = true
 
 [dev-dependencies]
+id-keys.workspace = true
 id-testkit.workspace = true
 
 [lints]

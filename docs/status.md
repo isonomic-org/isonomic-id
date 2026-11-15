@@ -2,69 +2,80 @@
 
 Updated 15 Nov 2026.
 
-## Waiting on one decision
+## The root is decided
 
-What an identity is rooted in: a smart-account address, or a key log with an
-Ethereum account bound in. Omar decides. The evidence is `spikes/root` and
-the memo "Decision: the root of an Isonomic identity" in the architecture
-folder.
-
-Until then `PrincipalId` is opaque, `id-core` has no key log and there is no
-`id-eth` crate. Everything below was built so that it does not move when the
-decision lands: it reaches identities only through
-`KeyResolver::is_current_key`.
+Omar decided on 15 Nov 2026: an identity is rooted in a key log, with an
+Ethereum account bound in. The memo is "Decision: the root of an Isonomic
+identity"; the design is "Isonomic Identity and Authority: architecture
+v0.1". Both are in the architecture folder.
 
 ## Built
 
 | Crate | State |
 | --- | --- |
-| `id-core` | IDs (opaque), keys, digests, codec, signed envelope |
-| `id-keys` | Trait and in-memory store. The secure-chip store is next. |
+| `id-core` | IDs, the key log, the directory, keys, digests, codec, envelope |
+| `id-keys` | Trait and in-memory store. The secure-chip store is issue 8. |
 | `id-resource` | IDs, record, graph walks, selectors |
 | `id-grants` | Format, narrowing, revocation, chain verification |
-| `id-check` | The check function |
+| `id-check` | The check function, tested over real key logs |
+| `id-eth` | Key derivation, address, two-way binding, account address arithmetic |
 | `id-testkit` | Principals, world, clock |
-| `spikes/root` | Both roots through ten tests; a test pins the findings |
+| `spikes/root` | The evidence behind the root decision. Kept, not shipped. |
 
 ## Decisions taken here
 
-1. **Encoding.** CBOR. Signatures and IDs cover bytes as received, so nothing
-   depends on canonical re-encoding.
-2. **Schemes.** P-256 for keys in a secure chip, Ed25519 for keys in
+Newest first.
+
+1. **A fork is shown to a person, never resolved by rule.** The directory
+   refuses a competing branch and reports whether a recovery key signed it.
+   A rule that lets the recovery kit win automatically would also let an old,
+   stolen kit rewrite history for everyone, so there is none.
+2. **Only a recovery key may change the recovery commitments.** A stolen
+   device can add itself; it cannot lock the kit out, so the kit can always
+   evict it without a fork.
+3. **A device is a key, not a principal.** It has no log of its own.
+4. **Agents and apps have their own logs**, naming their owner. Moving one to
+   a new owner is one entry. Checking that both owners agreed is not built
+   yet: it needs both owners' logs and belongs to the engine.
+5. **Bindings are checked by a pluggable checker.** `id-core` knows no
+   scheme; a log with a binding does not verify unless a checker for its
+   scheme is present.
+6. **The Ethereum key's address is bound from day one; the smart-account
+   address is not.** It depends on an account factory, which is chosen with
+   the chain. `account_salt` already fixes its salt to the ID.
+7. **The Ethereum key is derived from a seed**, so the recovery kit restores
+   it.
+8. **Encoding.** CBOR. Signatures and IDs cover bytes as received.
+9. **Schemes.** P-256 for keys in a secure chip, Ed25519 for keys in
    software. Every signature and digest carries a domain.
-3. **Grant format: our own.** Existing capability-token formats were built
-   and measured beside it. Size and speed are close. Ours names the
-   recipient of every link, gives every link an ID to revoke, and returns
-   allow, deny or ask; those are the reasons.
-4. **A chain covers only what every link covers.** Widening that can be seen
-   from two grants is refused outright; the rest grants nothing.
-5. **A signing key must be current at check time.** When a key is replaced,
-   grants it signed stop and the engine issues them again.
-6. **No policy engine in version 1.** Membership for shared workspaces is
-   one lookup behind the same function.
-7. **Derived data** needs read access to every source, direct or indirect.
-8. **Resource IDs** carry their creation time. That is visible to anyone who
-   sees the ID.
-9. **Purity.** A test fails when a package outside `docs/deps-allow.txt`
-   enters `Cargo.lock`.
+10. **Grant format: our own.** Size and speed are close to existing
+    capability tokens. Ours names the recipient of every link, gives every
+    link an ID to revoke, and returns allow, deny or ask.
+11. **A chain covers only what every link covers.**
+12. **A signing key must be current at check time.**
+13. **No policy engine in version 1.** Membership is one lookup.
+14. **Derived data** needs read access to every source.
+15. **Purity.** A test fails when a package outside `docs/deps-allow.txt`
+    enters `Cargo.lock`.
 
 ## The gate
 
 | Item | State |
 | --- | --- |
-| ID created, devices added, removed, replaced, recovered, all offline; a second process verifies from the log alone | Shown in `spikes/root`. Moves into `id-core` after the decision. |
-| A stolen old key cannot extend the log | Shown in `spikes/root`, with the limit stated: a newcomer who has never seen the real log can be shown a forged one. |
-| User issues an agent ID; user → agent → subagent only narrows; widening, expired and revoked grants refused | Narrowing, expiry and revocation: done. Agent IDs: after the decision. |
-| Check denies by default; allow, deny or ask with a reason; vectors frozen | Done, except freezing, which follows the format freeze. |
-| Ethereum key and address derived; two-way binding verifies offline; no chain call; allow-list | Binding shown in `spikes/root`. Allow-list: done. `id-eth`: after the decision. |
-| Private keys stay in the key store; macOS store tested on the Intel Mac | Trait and in-memory store: done. macOS store: not started. |
+| ID created, devices added, removed, replaced, recovered, all offline; a second verifier from the log alone | Done, from encoded bytes. |
+| A stolen old key cannot extend the log | Done for signing keys, used rotation keys and uncommitted keys. Limit stated in the spec: a newcomer can be shown a forged branch. |
+| User issues an agent ID; user → agent → subagent only narrows; widening, expired and revoked grants refused | Done, over real logs. |
+| Check denies by default; allow, deny or ask with a reason; vectors frozen | Done, except freezing. |
+| Ethereum key and address derived; two-way binding verifies offline; no chain call; allow-list | Done. |
+| Private keys stay in the key store; macOS store tested on the Intel Mac | Trait and in-memory store done. macOS store: issue 8. |
 | Timings on the Intel Mac | Linux numbers below. Intel Mac: run the command below. |
-| Decoders fuzzed for ten minutes | Not started. |
-| Requests filed with the engine, harness, SDK and Cells | After the formats freeze. |
+| Decoders fuzzed for ten minutes | Issue 9. The formats freeze after it. |
+| Requests filed with the engine, harness, SDK and Cells | After the freeze. |
 
 ## Timings
 
-Linux, x86-64 at 2.1 GHz, software keys, release build:
+Linux, x86-64 at 2.1 GHz, software keys, release build, measured with the
+prototype log, which does the same work as the library's:
 
 | Step | Time |
 | --- | --- |
@@ -90,7 +101,11 @@ Paste the block under "Timings" back to the session.
 
 ## Open
 
-- `Cargo.lock` is not committed yet and CI does not pass `--locked`.
+- The formats are not frozen. Fuzzing comes first.
+- CI does not pass `--locked` yet (issue 7).
 - Check vectors are table-driven tests, not yet frozen files.
 - The approval a person gives for an "ask first" grant is a flag on the
   request. It becomes a one-use grant when the agent host adopts this crate.
+- Transfer of an agent between owners is recorded but not yet verified
+  against both owners.
+- No account factory is pinned, so no smart-account address is bound.
