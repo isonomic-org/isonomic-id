@@ -1,0 +1,45 @@
+[package]
+name = "id-fuzz"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+# Kept out of the main workspace: fuzzing needs its own build settings.
+[workspace]
+members = ["."]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+id-check = { path = "../crates/id-check" }
+id-core = { path = "../crates/id-core" }
+id-eth = { path = "../crates/id-eth" }
+id-grants = { path = "../crates/id-grants" }
+id-resource = { path = "../crates/id-resource" }
+id-testkit = { path = "../crates/id-testkit" }
+
+[[bin]]
+name = "envelope"
+path = "fuzz_targets/envelope.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "grant_chain"
+path = "fuzz_targets/grant_chain.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "key_log"
+path = "fuzz_targets/key_log.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "grant_logic"
+path = "fuzz_targets/grant_logic.rs"
+test = false
+doc = false
