@@ -1,5 +1,21 @@
 # Progress
 
+## 15 Nov 2026, closing the gate
+
+- CI builds with `--locked` (issue 7).
+- `id-check`: `ChainCache` remembers verified chains; a repeated check takes
+  1.7 µs on Linux against 174 µs from cold (issue 17). The directory has a
+  version that moves whenever a log changes.
+- Four fuzz targets, ten minutes each with no failure (issue 9). One signs
+  mutated grants again so the chain rules themselves are reached, and checks
+  that the cached and plain answers always agree.
+- Version 1 frozen: `vectors/v1/vectors.txt` holds real logs and grants as
+  bytes with the IDs and decisions they must keep producing.
+- `id-keys`: `MacKeyStore`, the secure chip where allowed, the login
+  keychain otherwise (issue 8). Tested on the Intel Mac, where a cached chain
+  check takes 7.2 µs and a first check 256 µs.
+- Adoption requests filed with the engine, the harness, the SDK and Cells.
+
 ## 15 Nov 2026, after the decision
 
 - Omar decided the root: a key log with an Ethereum account bound in.
