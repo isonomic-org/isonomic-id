@@ -16,3 +16,5 @@ jobs:
   rust:
     uses: isonomic-org/.github/.github/workflows/rust-ci.yml@main
     secrets: inherit
+    with:
+      features: --all-features --locked
