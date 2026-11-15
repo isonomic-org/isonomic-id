@@ -97,12 +97,13 @@ On the Intel Mac, from a checkout of this repository:
 cargo run --release -p root-spike
 ```
 
-Paste the block under "Timings" back to the session.
+Record the block under "Timings" in this file.
 
 ## Open
 
-- The formats are not frozen. Fuzzing comes first.
+- The formats are not frozen. Fuzzing comes first (issue 9).
 - CI does not pass `--locked` yet (issue 7).
+- The recovery kit is issue 14; signed checkpoints for data are issue 15.
 - Check vectors are table-driven tests, not yet frozen files.
 - The approval a person gives for an "ask first" grant is a flag on the
   request. It becomes a one-use grant when the agent host adopts this crate.
