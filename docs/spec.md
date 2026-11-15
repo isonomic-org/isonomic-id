@@ -1,7 +1,10 @@
 # Specification
 
-What the crates promise. Nothing here is frozen yet: the formats freeze once
-the decoders have been fuzzed, and from then on a change needs the label
+What the crates promise. **Version 1 is frozen** as of 15 Nov 2026.
+`vectors/v1/vectors.txt` holds real key logs and grants as bytes, with the
+IDs and the decision they must produce; every later version must still
+decode and verify them to the same answers (`crates/id-check/tests/vectors.rs`).
+A change to a format, the ID rule or the check function needs the label
 `needs-master`.
 
 ## Principals
@@ -101,7 +104,8 @@ Rules a log must pass:
 replaces what it knew; an older copy changes nothing; a log that parts ways
 with the known one is refused as a fork, with the position and whether the
 competing entry was signed by a recovery key. A person decides what to do
-with a fork. Nothing switches branches on its own.
+with a fork. Nothing switches branches on its own. `Directory::version`
+goes up whenever what it knows changes.
 
 What this does not stop: someone holding an unused rotation key from a lost,
 unlocked device can show a forged branch to a verifier that has never seen
@@ -126,6 +130,17 @@ closes that. This library defines the digest; it publishes nothing.
 call. `StoredKey` is one key in a store, usable wherever a `Signer` is
 expected. A store reports how it protects keys: memory, operating-system
 keychain or hardware.
+
+`MacKeyStore`, on macOS only:
+
+- P-256 keys are made inside the secure chip when the running program may
+  keep keys there, which needs a signed app with a keychain entitlement.
+  Otherwise they are made in software and kept in the login keychain.
+  `p256_protection` says which.
+- Ed25519 keys, which the chip does not offer, are kept in the login
+  keychain.
+- Every item it writes is labelled `isonomic-id:<label>`; it touches
+  nothing else.
 
 ## Resources
 
@@ -200,3 +215,19 @@ something its parent did not cover grants nothing.
 There is no policy engine. Shared workspaces add one lookup,
 `World::is_member(who, group)`, so a grant issued to a team is usable by its
 members. Callers do not change.
+
+### Checking the same chain again
+
+`ChainCache::check` gives the same answer as `check`, but remembers chains
+that verified. A chain is found again by the digest of its bytes exactly as
+presented, so a changed byte means a fresh verification. A remembered chain
+is used only while:
+
+- the world's version (`VersionedWorld::version`) is unchanged, which a host
+  bumps whenever a key log or the revocation list changes, and
+- the time is within every link's dates.
+
+Only the signatures and the chain's own rules are remembered. Ownership,
+scope, budgets, membership, approval and derived data are decided afresh on
+every check. The cache holds at most 4096 chains and starts again from empty
+when full.
