@@ -18,6 +18,7 @@ sha3 = "0.10"
 
 id-check = { path = "crates/id-check" }
 id-core = { path = "crates/id-core" }
+id-eth = { path = "crates/id-eth" }
 id-grants = { path = "crates/id-grants" }
 id-keys = { path = "crates/id-keys" }
 id-resource = { path = "crates/id-resource" }
