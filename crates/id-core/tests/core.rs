@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Envelope, codec and ID behaviour, plus the dependency allow-list.
 
 use id_core::{frame, from_cbor, Digest, Error, KeyAlg, PrincipalId, PublicKey, Signed, Signer};

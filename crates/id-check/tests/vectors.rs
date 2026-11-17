@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Frozen version 1 formats.
 //!
 //! `vectors/v1/vectors.txt` holds real key logs and grants as bytes, with the

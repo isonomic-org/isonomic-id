@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! A cached chain must never allow what a fresh check would deny.
 
 use id_check::{check, ChainCache, Context, Cost, Decision, Reason, Request};

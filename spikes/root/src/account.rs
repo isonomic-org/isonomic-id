@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Option A: the identity is a smart-account address.
 //!
 //! The name is the address the account will have once deployed. It is fixed

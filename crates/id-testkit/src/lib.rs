@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Test helpers: fake principals, a fake world and a manual clock.
 //!
 //! Principals made here have keys derived from their names, so the same name

@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The key log, through the life of one identity.
 
 use id_core::log::{Commitment, Directory, Kind, Log, LogError, Op};

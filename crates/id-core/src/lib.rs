@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Core types shared by every identity crate.
 //!
 //! Principal IDs, public keys and signature checks, digests, the byte

@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Ethereum, ready from day one and not required.
 //!
 //! An identity can carry an Ethereum key. The key's address is bound into

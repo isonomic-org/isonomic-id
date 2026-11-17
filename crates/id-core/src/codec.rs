@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The one byte encoding: CBOR, with a size limit and no trailing bytes.
 //!
 //! Signatures and IDs are always computed over bytes exactly as they were

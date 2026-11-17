@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The key store on a Mac.
 //!
 //! P-256 keys are made inside the secure chip when the running program is

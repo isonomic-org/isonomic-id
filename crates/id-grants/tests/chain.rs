@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Chains of grants: what verifies and what is refused.
 
 use id_core::{KeyAlg, KeyResolver, PrincipalId, PublicKey, Signer, Timestamp};

@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! What every key store must do, run against the in-memory store.
 
 use id_core::{frame, KeyAlg, Signed, Signer};

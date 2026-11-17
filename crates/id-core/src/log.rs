@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The key log.
 //!
 //! An identity is a small, append-only, signed log that its owner keeps. The

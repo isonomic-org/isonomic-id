@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Known answers for the arithmetic, and the binding inside a key log.
 
 use id_core::log::{Commitment, Directory, Kind, Log, LogError, Op};

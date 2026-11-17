@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The grant: one signed format for every permission.
 //!
 //! A grant says that an issuer lets a recipient perform some actions on some

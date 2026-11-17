@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Checking a chain of grants.
 
 use crate::{Action, Budget, Grant, GrantId, SignedGrant, DOMAIN, MAX_CHAIN};

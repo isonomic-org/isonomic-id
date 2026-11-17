@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The resource model.
 //!
 //! Every protected thing (a document, a file, a session, an index, a tool)

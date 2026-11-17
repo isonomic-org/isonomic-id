@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Key stores.
 //!
 //! A key store creates keys, signs with them and deletes them. It has no way

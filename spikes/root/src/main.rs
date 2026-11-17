@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Two ways to root an identity, run through the same tests.
 //!
 //! `cargo run --release -p root-spike` prints the results table and the

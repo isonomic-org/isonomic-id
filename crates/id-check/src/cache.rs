@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Remembering chains that have already been verified.
 
 use crate::{check_with, Decision, Request, World};
