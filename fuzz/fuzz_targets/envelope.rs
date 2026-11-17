@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Any bytes: decoding a signed envelope never panics, and what decodes
 //! re-encodes and verifies without panicking.
 #![no_main]

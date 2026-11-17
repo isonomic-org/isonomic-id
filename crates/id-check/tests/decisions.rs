@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The check function's decisions, case by case.
 
 use id_check::{check, Context, Cost, Decision, Reason, Request};

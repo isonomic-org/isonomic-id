@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Which resources a grant covers.
 
 use crate::{ResourceId, ResourceMeta};

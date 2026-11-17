@@ -3,6 +3,7 @@ name = "id-eth"
 description = "The Ethereum key and address of an identity and their two-way binding. No chain calls."
 version.workspace = true
 edition.workspace = true
+license = "Apache-2.0"
 rust-version.workspace = true
 publish.workspace = true
 

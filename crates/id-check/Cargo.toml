@@ -3,6 +3,7 @@ name = "id-check"
 description = "The check function: allow, deny or ask, with a reason."
 version.workspace = true
 edition.workspace = true
+license = "Apache-2.0"
 rust-version.workspace = true
 publish.workspace = true
 

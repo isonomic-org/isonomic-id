@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! How long each step takes on this machine.
 
 use crate::eth::{self, EthKey};

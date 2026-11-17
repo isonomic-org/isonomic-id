@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The same ten tests, run against each way of rooting an identity.
 
 use crate::account::{self, AccountError, Chain};

@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Any bytes, split into length-prefixed grants: decoding and verifying the
 //! chain never panics.
 #![no_main]

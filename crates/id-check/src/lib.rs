@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The check function.
 //!
 //! `check(request, world)` answers one question: may this principal perform

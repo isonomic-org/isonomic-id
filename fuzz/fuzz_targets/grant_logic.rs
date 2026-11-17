@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Mutated grants, each signed again by its issuer's test key, so the
 //! fuzzer reaches the chain rules behind the signature check. For every
 //! chain: verifying never panics, and the cached check always gives the same

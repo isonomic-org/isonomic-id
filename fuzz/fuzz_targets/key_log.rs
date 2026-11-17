@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! Any bytes, split into length-prefixed entries: replaying a key log, with Ethereum
 //! bindings checked, and offering it to a directory never panic.
 #![no_main]

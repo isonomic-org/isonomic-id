@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The check function over real key logs: a person, an agent and a subagent.
 
 use id_check::{check, ChainCache, Context, Decision, Reason, Request, VersionedWorld, World};

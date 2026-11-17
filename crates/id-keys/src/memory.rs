@@ -1,3 +1,6 @@
+// Copyright 2026 Anud Inc.
+// SPDX-License-Identifier: Apache-2.0
+
 //! The in-memory key store.
 
 use crate::{KeyError, KeyHandle, KeyStore, Protection};

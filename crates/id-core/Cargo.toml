@@ -3,6 +3,7 @@ name = "id-core"
 description = "Principals, keys, digests and signed envelopes shared by every identity crate."
 version.workspace = true
 edition.workspace = true
+license = "Apache-2.0"
 rust-version.workspace = true
 publish.workspace = true
 
