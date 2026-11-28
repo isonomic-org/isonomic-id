@@ -1,5 +1,5 @@
 // Copyright 2026 Anud Inc.
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Mutated grants, each signed again by its issuer's test key, so the
 //! fuzzer reaches the chain rules behind the signature check. For every

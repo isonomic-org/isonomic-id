@@ -3,7 +3,7 @@ name = "id-resource"
 description = "Resource IDs, ownership, collections, provenance and resource selectors."
 version.workspace = true
 edition.workspace = true
-license = "Apache-2.0"
+license = "GPL-3.0-or-later"
 rust-version.workspace = true
 publish.workspace = true
 
