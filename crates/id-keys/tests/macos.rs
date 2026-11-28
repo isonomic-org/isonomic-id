@@ -1,5 +1,5 @@
 // Copyright 2026 Anud Inc.
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The Mac key store against the real keychain. Runs only on a Mac, and only
 //! when asked, because it writes to the login keychain and may prompt:

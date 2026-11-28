@@ -7,7 +7,7 @@ version = "0.0.0"
 edition = "2021"
 rust-version = "1.86"
 publish = false
-license = "Apache-2.0"
+license = "GPL-3.0-or-later"
 
 [workspace.dependencies]
 ciborium = "0.2"
