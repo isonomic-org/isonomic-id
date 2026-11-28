@@ -32,3 +32,7 @@ unsafe_code = "forbid"
 dbg_macro = "deny"
 todo = "deny"
 unwrap_used = "warn"
+
+# Arithmetic that overflows stops instead of wrapping, in release builds too.
+[profile.release]
+overflow-checks = true
